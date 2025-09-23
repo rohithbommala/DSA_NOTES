@@ -1,0 +1,97 @@
+#include <vector>
+#include <set>
+#include <unordered_set>
+#include <string>
+using namespace std;
+
+class Solution {
+private:
+    vector<pair<int, int>> directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+    
+    // DFS to find all cells of an island
+    void dfs(vector<string>& grid, int row, int col, vector<vector<bool>>& visited, 
+             vector<pair<int, int>>& island) {
+        int n = grid.size();
+        int m = grid[0].size();
+        
+        if (row < 0 || row >= n || col < 0 || col >= m || 
+            visited[row][col] || grid[row][col] == '0') {
+            return;
+        }
+        
+        visited[row][col] = true;
+        island.push_back({row, col});
+        
+        for (auto& dir : directions) {
+            dfs(grid, row + dir.first, col + dir.second, visited, island);
+        }
+    }
+    
+    // Normalize island coordinates to make them position-independent
+    string normalizeIsland(vector<pair<int, int>>& island) {
+        if (island.empty()) return "";
+        
+        // Find minimum row and column
+        int minRow = island[0].first;
+        int minCol = island[0].second;
+        
+        for (auto& cell : island) {
+            minRow = min(minRow, cell.first);
+            minCol = min(minCol, cell.second);
+        }
+        
+        // Create normalized coordinates
+        set<pair<int, int>> normalized;
+        for (auto& cell : island) {
+            normalized.insert({cell.first - minRow, cell.second - minCol});
+        }
+        
+        // Convert to string for hashing
+        string shape = "";
+        for (auto& coord : normalized) {
+            shape += to_string(coord.first) + "," + to_string(coord.second) + "|";
+        }
+        
+        return shape;
+    }
+    
+public:
+    int countMatches(vector<string>& grid1, vector<string>& grid2) {
+        int n = grid1.size();
+        int m = grid1[0].size();
+        
+        // Find all islands in grid1 and store their normalized shapes
+        unordered_set<string> grid1Shapes;
+        vector<vector<bool>> visited1(n, vector<bool>(m, false));
+        
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (grid1[i][j] == '1' && !visited1[i][j]) {
+                    vector<pair<int, int>> island;
+                    dfs(grid1, i, j, visited1, island);
+                    grid1Shapes.insert(normalizeIsland(island));
+                }
+            }
+        }
+        
+        // Find all islands in grid2 and count matches
+        int matchCount = 0;
+        vector<vector<bool>> visited2(n, vector<bool>(m, false));
+        
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (grid2[i][j] == '1' && !visited2[i][j]) {
+                    vector<pair<int, int>> island;
+                    dfs(grid2, i, j, visited2, island);
+                    string shape = normalizeIsland(island);
+                    
+                    if (grid1Shapes.count(shape)) {
+                        matchCount++;
+                    }
+                }
+            }
+        }
+        
+        return matchCount;
+    }
+};
