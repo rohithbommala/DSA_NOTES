@@ -1,0 +1,38 @@
+int numWays(vector<string>& words, string target) {
+    const int MOD = 1e9 + 7;
+    int m = target.length();
+    int n = words[0].length();
+    
+    // Count frequency of each character at each position
+    vector<vector<long long>> charCount(n, vector<long long>(26, 0));
+    for (const string& word : words) {
+        for (int j = 0; j < n; j++) {
+            charCount[j][word[j] - 'a']++;
+        }
+    }
+    
+    // dp[i][j] = ways to form target[0..i-1] with last char from position j
+    vector<vector<long long>> dp(m + 1, vector<long long>(n + 1, 0));
+    
+    // Base case: empty target can be formed in 1 way
+    for (int j = 0; j <= n; j++) {
+        dp[0][j] = 1;
+    }
+    
+    // Fill the DP table
+    for (int i = 1; i <= m; i++) {
+        for (int j = i; j <= n; j++) {
+            // Option 1: Skip position j-1
+            dp[i][j] = dp[i][j-1];
+            
+            // Option 2: Use position j-1 for target[i-1]
+            char targetChar = target[i-1];
+            long long count = charCount[j-1][targetChar - 'a'];
+            if (count > 0) {
+                dp[i][j] = (dp[i][j] + dp[i-1][j-1] * count) % MOD;
+            }
+        }
+    }
+    
+    return dp[m][n];
+}
