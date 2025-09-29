@@ -1,0 +1,53 @@
+class Solution {
+public:
+    int minCut(string s) {
+        int n = s.length();
+        
+        // Step 1: Create palindrome check table
+        vector<vector<bool>> isPalin(n, vector<bool>(n, false));
+        
+        // Step 2: Create DP array for minimum cuts
+        vector<int> dp(n);
+        
+        // Step 3: Fill palindrome table
+        // Single characters are palindromes
+        for (int i = 0; i < n; i++) {
+            isPalin[i][i] = true;
+        }
+        
+        // Fill for length 2 and above
+        for (int len = 2; len <= n; len++) {
+            for (int i = 0; i <= n - len; i++) {
+                int j = i + len - 1;
+                
+                if (s[i] == s[j]) {
+                    if (len == 2) {
+                        isPalin[i][j] = true;
+                    } else {
+                        isPalin[i][j] = isPalin[i + 1][j - 1];
+                    }
+                }
+            }
+        }
+        
+        // Step 4: Fill DP array for minimum cuts
+        for (int i = 0; i < n; i++) {
+            // If s[0...i] is palindrome, no cut needed
+            if (isPalin[0][i]) {
+                dp[i] = 0;
+            } else {
+                // Initialize with worst case (cut after each char)
+                dp[i] = i;
+                
+                // Try all possible last palindromes
+                for (int j = 1; j <= i; j++) {
+                    if (isPalin[j][i]) {
+                        dp[i] = min(dp[i], dp[j - 1] + 1);
+                    }
+                }
+            }
+        }
+        
+        return dp[n - 1];
+    }
+};
