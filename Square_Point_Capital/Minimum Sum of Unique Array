@@ -1,0 +1,38 @@
+Problem Description:
+You are given an integer array arr of length n.
+Your task is to make all elements of the array unique by repeatedly increasing any duplicate element by 1. Each increment operation can be applied multiple times if necessary.
+Return the minimum possible sum of the array after making all elements unique.
+
+#include <iostream>
+using namespace std;
+
+// To find minimum sum of unique elements.
+int minSum(int arr[], int n)
+{
+    int sum = arr[0];
+
+    for (int i = 1; i < n; i++) {
+        if (arr[i] == arr[i - 1]) {            
+
+            // While current element is same as 
+            // previous or has become smaller
+            // than previous.
+            int j = i;
+            while (j < n && arr[j] <= arr[j - 1]) {          
+                arr[j] = arr[j] + 1;
+                j++;
+            }
+        }
+         sum = sum + arr[i];
+     }
+
+    return sum;
+}
+
+Example 1:
+Input: arr = [1, 2, 2]
+Output: 6
+Explanation:
+Original sum = 1 + 2 + 2 = 5
+The second 2 is a duplicate → increase it to 3.
+Array becomes [1, 2, 3], sum = 6
