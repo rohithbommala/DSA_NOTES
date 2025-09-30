@@ -1,0 +1,103 @@
+Problem Description
+
+You are given an integer array nums of length n.
+
+In one operation, you may swap any two elements in the array.
+Your task is to return the minimum number of swaps required to rearrange the array such that all even numbers appear before all odd numbers.
+
+The relative order of numbers within the even or odd group does not matter.
+
+class Solution {
+public:
+    int minSwapsToSortEvenOdd(vector<int>& nums) {
+        int swaps = 0;
+        int left = 0, right = nums.size() - 1;
+        
+        while (left < right) {
+            // Skip even numbers from left
+            while (left < right && nums[left] % 2 == 0) {
+                left++;
+            }
+            
+            // Skip odd numbers from right
+            while (left < right && nums[right] % 2 == 1) {
+                right--;
+            }
+            
+            // If both pointers haven't crossed, we need to swap
+            if (left < right) {
+                swap(nums[left], nums[right]);
+                swaps++;
+            }
+        }
+        
+        return swaps;
+    }
+};
+
+📌 Example
+
+Input:
+
+nums = [3, 2, 5, 8, 7, 6, 4, 1]
+
+
+Goal: Rearrange with even numbers on the left and odd numbers on the right using minimum swaps.
+
+Step 1: Initialize
+
+swaps = 0
+
+left = 0, right = 7
+
+Step 2: First Iteration
+
+nums[left] = 3 (odd) → stop.
+
+nums[right] = 1 (odd) → move right left → now right = 6.
+
+nums[right] = 4 (even) → stop.
+
+Both pointers valid → swap nums[left] and nums[right].
+
+Array becomes:
+
+[4, 2, 5, 8, 7, 6, 3, 1]
+
+
+swaps = 1.
+left = 0 → 1, right = 6 → 5.
+
+Step 3: Second Iteration
+
+nums[left] = 2 (even) → move left → 2.
+
+nums[right] = 6 (even) → stop.
+
+nums[left] = 5 (odd), nums[right] = 6 (even) → swap.
+
+Array becomes:
+
+[4, 2, 6, 8, 7, 5, 3, 1]
+
+
+swaps = 2.
+left → 3, right → 4.
+
+Step 4: Third Iteration
+
+nums[left] = 8 (even) → move left → 4.
+Now left = 4, right = 4 → loop ends.
+
+✅ Final Result
+
+Array after swaps:
+
+[4, 2, 6, 8, 7, 5, 3, 1]
+
+
+Evens: [4, 2, 6, 8] on the left.
+
+Odds: [7, 5, 3, 1] on the right.
+
+Swaps = 2.
