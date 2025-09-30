@@ -1,0 +1,39 @@
+Problem Description
+Given two strings s and t, a string x is called a divisor of a string y if y can be formed by concatenating one or more copies of x.
+Your task is to find the length of the smallest string x such that both s and t can be formed by concatenating copies of x.
+Return -1 if no such string exists.
+
+Example 1
+Input:
+s = "ababab", t = "abab"
+Output:2
+Explanation:
+Both strings can be formed by repeating "ab".
+The smallest common divisor has length 2.
+
+int findSmallestDivisor(string s, string t) {
+    // Step 1: Check basic divisibility
+    if (s.length() % t.length() != 0) {
+        return -1;
+    }
+    
+    // Step 2: Check if s is formed by concatenating t
+    string check = "";
+    while (check.length() < s.length()) {
+        check += t;
+    }
+    if (check.substr(0, s.length()) != s) {
+        return -1;
+    }
+    
+    // Step 3: Find the smallest common divisor
+    // If both s and t can be formed by some string x,
+    // then s + t = t + s must be true
+    if (s + t != t + s) {
+        return -1;
+    }
+    
+    // The length of smallest divisor is GCD of lengths
+    int gcd_len = __gcd(s.length(), t.length());
+    return gcd_len;
+}
