@@ -1,0 +1,32 @@
+https://leetcode.com/problems/remove-boxes/description/
+
+class Solution {
+public:
+    int n;
+    vector<vector<vector<int>>> dp;
+    
+    int dfs(vector<int>& boxes, int i, int j, int k) {
+        if (i > j) return 0;
+        if (dp[i][j][k] != -1) return dp[i][j][k];
+        
+        // Option 1: remove boxes[i] now
+        int res = (k+1)*(k+1) + dfs(boxes, i+1, j, 0);
+        
+        // Option 2: merge with later same-colored boxes
+        for (int m = i+1; m <= j; m++) {
+            if (boxes[m] == boxes[i]) {
+                res = max(res,
+                          dfs(boxes, i+1, m-1, 0) + 
+                          dfs(boxes, m, j, k+1));
+            }
+        }
+        
+        return dp[i][j][k] = res;
+    }
+    
+    int removeBoxes(vector<int>& boxes) {
+        n = boxes.size();
+        dp.assign(n, vector<vector<int>>(n, vector<int>(n+1, -1)));
+        return dfs(boxes, 0, n-1, 0);
+    }
+};
