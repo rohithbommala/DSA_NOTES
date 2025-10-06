@@ -1,0 +1,34 @@
+class Solution {
+public:
+    int subarraySum(vector<int>& nums, int k) {
+        unordered_map<int, int> prefixSumFreq;
+        prefixSumFreq[0] = 1;  // Empty prefix
+        
+        int prefixSum = 0;
+        int count = 0;
+        
+        for (int num : nums) {
+            prefixSum += num;
+            
+            // Look for: prefixSum - k
+            int target = prefixSum - k;
+            if (prefixSumFreq.count(target)) {
+                count += prefixSumFreq[target];
+            }
+            
+            prefixSumFreq[prefixSum]++;
+        }
+        
+        return count;
+    }
+};
+
+Example: nums = [1, 2, 3, -3, 1, 1], k = 3
+i	num	prefixSum	target = sum-k	freq[target]	count	Update freq
+0	1	1	1-3=-2	0	0	freq[1]=1
+1	2	3	3-3=0	1	1	freq[3]=1
+2	3	6	6-3=3	1	2	freq[6]=1
+3	-3	3	3-3=0	1	3	freq[3]=2
+4	1	4	4-3=1	1	4	freq[4]=1
+5	1	5	5-3=2	0	4	freq[5]=1
+Found subarrays: [1,2], [3], [3,-3,1,1], [2,3,-3]
