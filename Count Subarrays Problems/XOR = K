@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int subarraysWithXorK(vector<int>& nums, int k) {
+        unordered_map<int, int> prefixXorFreq;
+        prefixXorFreq[0] = 1;  // Empty prefix
+        
+        int prefixXor = 0;
+        int count = 0;
+        
+        for (int num : nums) {
+            prefixXor ^= num;
+            
+            // Look for: prefixXor ^ k
+            int target = prefixXor ^ k;
+            if (prefixXorFreq.count(target)) {
+                count += prefixXorFreq[target];
+            }
+            
+            prefixXorFreq[prefixXor]++;
+        }
+        
+        return count;
+    }
+};
+
+Example: nums = [4, 2, 2, 6, 4], k = 6
+i	num	prefixXor	target = xor^k	freq[target]	count	Update freq
+0	4	4	4^6=2	0	0	freq[4]=1
+1	2	6	6^6=0	1	1	freq[6]=1
+2	2	4	4^6=2	0	1	freq[4]=2
+3	6	2	2^6=4	2	3	freq[2]=1
+4	4	6	6^6=0	1	4	freq[6]=2
+Found subarrays: [4,2], [2,2,6], [6], [4,2,2,6,4]
