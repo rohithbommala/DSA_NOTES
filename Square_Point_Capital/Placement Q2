@@ -1,0 +1,138 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int maximizeWork(vector<int>& taskMemory, vector<int>& taskType, int maxMemory) {
+    int n = taskMemory.size();
+    
+    // Step 1: Group tasks by type
+    map<int, vector<int>> typeGroups;
+    for (int i = 0; i < n; i++) {
+        typeGroups[taskType[i]].push_back(taskMemory[i]);
+    }
+    
+    int totalWork = 0;
+    
+    // Step 2: Process each type group
+    for (auto& [type, memories] : typeGroups) {
+        // Sort memories for this type
+        sort(memories.begin(), memories.end());
+        
+        vector<bool> used(memories.size(), false);
+        
+        // Step 3: Greedy pairing - try to pair tasks first
+        int left = 0;
+        int right = memories.size() - 1;
+        
+        while (left < right) {
+            if (memories[left] + memories[right] <= maxMemory) {
+                // Valid pair found
+                totalWork += 1;
+                used[left] = true;
+                used[right] = true;
+                left++;
+                right--;
+            } else {
+                // Can't pair with right, try smaller
+                right--;
+            }
+        }
+        
+        // Step 4: Process remaining unpaired tasks individually
+        for (int i = 0; i < memories.size(); i++) {
+            if (!used[i] && memories[i] <= maxMemory) {
+                totalWork += 1;  // Single task executed
+            }
+        }
+    }
+    
+    return totalWork;
+}
+
+int main() {
+    // Test Case 1
+    vector<int> taskMemory1 = {1, 2, 3, 4, 5};
+    vector<int> taskType1 = {1, 1, 2, 2, 2};
+    int maxMemory1 = 6;
+    
+    cout << "Test Case 1:\n";
+    cout << "Task Memory: "; for(int m : taskMemory1) cout << m << " "; cout << "\n";
+    cout << "Task Type: "; for(int t : taskType1) cout << t << " "; cout << "\n";
+    cout << "Max Memory: " << maxMemory1 << "\n";
+    cout << "Maximum Work: " << maximizeWork(taskMemory1, taskType1, maxMemory1) << "\n";
+    cout << "Expected: 5 units\n\n";
+    
+    // Test Case 2
+    vector<int> taskMemory2 = {2, 3, 4, 2, 3};
+    vector<int> taskType2 = {1, 1, 1, 2, 2};
+    int maxMemory2 = 7;
+    
+    cout << "Test Case 2:\n";
+    cout << "Task Memory: "; for(int m : taskMemory2) cout << m << " "; cout << "\n";
+    cout << "Task Type: "; for(int t : taskType2) cout << t << " "; cout << "\n";
+    cout << "Max Memory: " << maxMemory2 << "\n";
+    cout << "Maximum Work: " << maximizeWork(taskMemory2, taskType2, maxMemory2) << "\n\n";
+    
+    // Test Case 3 - All single tasks
+    vector<int> taskMemory3 = {10, 12, 15, 8};
+    vector<int> taskType3 = {1, 1, 1, 1};
+    int maxMemory3 = 15;
+    
+    cout << "Test Case 3:\n";
+    cout << "Task Memory: "; for(int m : taskMemory3) cout << m << " "; cout << "\n";
+    cout << "Task Type: "; for(int t : taskType3) cout << t << " "; cout << "\n";
+    cout << "Max Memory: " << maxMemory3 << "\n";
+    cout << "Maximum Work: " << maximizeWork(taskMemory3, taskType3, maxMemory3) << "\n\n";
+    
+    // Test Case 4 - Mix of pairs and singles
+    vector<int> taskMemory4 = {1, 3, 5, 7, 9};
+    vector<int> taskType4 = {1, 1, 1, 1, 1};
+    int maxMemory4 = 10;
+    
+    cout << "Test Case 4:\n";
+    cout << "Task Memory: "; for(int m : taskMemory4) cout << m << " "; cout << "\n";
+    cout << "Task Type: "; for(int t : taskType4) cout << t << " "; cout << "\n";
+    cout << "Max Memory: " << maxMemory4 << "\n";
+    cout << "Maximum Work: " << maximizeWork(taskMemory4, taskType4, maxMemory4) << "\n";
+    cout << "Expected: (1,9)=2 + (3,7)=2 + 5=1 → 5 units\n\n";
+    
+    return 0;
+}
+
+
+Example: taskMemory = [1, 2, 3, 4, 5], taskType = [1, 1, 2, 2, 2], maxMemory = 6
+Step 1: Group by type
+
+text
+Type 1: [1, 2]
+Type 2: [3, 4, 5]
+Step 2: Process Type 1
+
+text
+Sorted: [1, 2]
+         ↑  ↑
+       left right
+
+1 + 2 = 3 ≤ 6 ✓
+Pair found! work += 2
+Mark both as used
+Step 3: Process Type 2
+
+text
+Sorted: [3, 4, 5]
+         ↑     ↑
+       left  right
+
+3 + 5 = 8 > 6 ✗ → right--
+
+         ↑  ↑
+       left right
+3 + 4 = 7 > 6 ✗ → right--
+
+         ↑
+      left=right (stop pairing)
+
+Now check unpaired tasks:
+- 3 ≤ 6 ✓ → work += 1
+- 4 ≤ 6 ✓ → work += 1
+- 5 ≤ 6 ✓ → work += 1
+Total Work = 2 + 3 = 5 units ✅
