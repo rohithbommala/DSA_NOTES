@@ -1,0 +1,123 @@
+Explanation:
+Key Functions:
+factorial(n): Calculates n!
+
+countValidNumbers(s):
+
+Counts digit frequencies
+Calculates total permutations: n! / (f1! × f2! × ... × fk!)
+Subtracts invalid numbers with leading zeros
+equalFrequency(a, b):
+
+Checks if both strings have same digit frequencies
+solve(a, b):
+
+Main logic: returns count based on frequency equality
+Example Outputs:
+text
+solve("112", "211") = 4
+  Valid numbers: 112, 121, 211, 121
+
+solve("100", "010") = 2
+  Valid numbers: 100, 001 → Only 100 (no leading zero)
+
+solve("111", "222") = 1
+  Valid numbers: 111 (only one unique permutation)
+Time Complexity:
+O(n) where n is the length of string
+Space Complexity:
+O(1) (max 10 digits, so constant space)
+Does this solve your problem? Any specific constraints on input size?
+
+
+#include <bits/stdc++.h>
+using namespace std;
+
+// Function to calculate factorial
+long long factorial(int n) {
+    long long result = 1;
+    for (int i = 2; i <= n; i++) {
+        result *= i;
+    }
+    return result;
+}
+
+// Count valid numbers (excluding leading zeros)
+long long countValidNumbers(string s) {
+    int n = s.length();
+    
+    // Count frequency of each digit
+    map<char, int> freq;
+    for (char c : s) {
+        freq[c]++;
+    }
+    
+    // Total permutations = n! / (freq1! * freq2! * ... * freqk!)
+    long long total = factorial(n);
+    for (auto& p : freq) {
+        total /= factorial(p.second);
+    }
+    
+    // Subtract arrangements starting with '0'
+    if (freq.count('0') && freq['0'] > 0) {
+        freq['0']--;  // Use one '0' at start
+        
+        long long leadingZero = factorial(n - 1);
+        for (auto& p : freq) {
+            leadingZero /= factorial(p.second);
+        }
+        
+        total -= leadingZero;
+    }
+    
+    // Edge case: all zeros
+    if (total == 0 && n > 0) {
+        return 1;  // The number 0 itself
+    }
+    
+    return total;
+}
+
+// Check if two strings have equal digit frequencies
+bool equalFrequency(string a, string b) {
+    if (a.length() != b.length()) {
+        return false;
+    }
+    
+    map<char, int> freqA, freqB;
+    for (char c : a) freqA[c]++;
+    for (char c : b) freqB[c]++;
+    
+    return freqA == freqB;
+}
+
+// Main solve function
+long long solve(string a, string b) {
+    if (equalFrequency(a, b)) {
+        return countValidNumbers(a);  // Can use a or b (same result)
+    } else {
+        return countValidNumbers(b);
+    }
+}
+
+int main() {
+    string a, b;
+    
+    cout << "Enter string a: ";
+    cin >> a;
+    cout << "Enter string b: ";
+    cin >> b;
+    
+    long long result = solve(a, b);
+    
+    cout << "Number of valid numbers that can be formed: " << result << endl;
+    
+    // Test cases
+    cout << "\n--- Test Cases ---\n";
+    cout << "solve(\"112\", \"211\") = " << solve("112", "211") << endl;  // Equal freq
+    cout << "solve(\"123\", \"456\") = " << solve("123", "456") << endl;  // Not equal
+    cout << "solve(\"100\", \"010\") = " << solve("100", "010") << endl;  // With zeros
+    cout << "solve(\"111\", \"222\") = " << solve("111", "222") << endl;  // All same
+    
+    return 0;
+}
