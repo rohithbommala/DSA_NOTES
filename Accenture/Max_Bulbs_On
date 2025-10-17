@@ -1,0 +1,37 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int solution(vector<int>& A) {
+    int max_bulb_on = 0;   // track the highest bulb number turned on
+    int count_on = 0;      // number of bulbs turned on so far
+    int moments = 0;       // count of shining moments
+
+    for (int i = 0; i < A.size(); ++i) {
+        max_bulb_on = max(max_bulb_on, A[i]);
+        count_on++;
+        if (max_bulb_on == count_on) {
+            moments++;
+        }
+    }
+
+    return moments;
+}
+
+int main() {
+    vector<int> A = {2, 1, 3, 5, 4};
+    cout << solution(A) << endl;  // Output: 3
+    return 0;
+}
+
+✅ Example
+For A = [2, 1, 3, 5, 4]:
+
+Step	Bulb Turned On	max_on	count_on	Shine?
+0	2	2	1	No
+1	1	2	2	✅ Yes
+2	3	3	3	✅ Yes
+3	5	5	4	No
+4	4	5	5	✅ Yes
+→ Total shine moments = 3
