@@ -1,0 +1,41 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+class Solution {
+public:
+    string smallestString(string s, vector<int>& arr) {
+        vector<vector<int>> wt(10001);
+        for(int i=0; i<arr.size(); i++){
+            wt[arr[i]].push_back(i);
+        }
+        for(int i=0; i<wt.size(); i++){
+            if(!wt[i].empty()){
+                vector<int> idx = wt[i];
+                vector<char> chars;
+                
+                for(int pos : idx){
+                    chars.push_back(s[pos]);
+                }
+                
+                sort(idx.begin(), idx.end());
+                sort(chars.begin(), chars.end());
+                
+                for(int k=0; k<idx.size(); k++){
+                    s[idx[k]]=chars[k];
+                }
+            }
+        }
+        
+        return s;
+    }
+};
+
+int main() {
+    Solution sol;
+    string s = "xvrb";
+    vector<int> arr = {2, 1, 2, 2};
+    cout << sol.smallestString(s, arr);
+    return 0;
+}
+
+bvrx
